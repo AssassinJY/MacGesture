@@ -16,6 +16,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Use HTTPS for public GitHub dependencies
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
+
       - name: Build MacGesture
         run: |
           xcodebuild \
