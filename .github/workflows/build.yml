@@ -29,9 +29,16 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
+      - name: Package application
+        run: |
+          ditto \
+            -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/DerivedData/Build/Products/Debug/MacGesture.app" \
+            "$RUNNER_TEMP/MacGesture-debug.zip"
+
       - name: Upload application
         uses: actions/upload-artifact@v7
         with:
           name: MacGesture-debug
-          path: ${{ runner.temp }}/DerivedData/Build/Products/Debug/MacGesture.app
+          path: ${{ runner.temp }}/MacGesture-debug.zip
           if-no-files-found: error
