@@ -24,7 +24,7 @@ jobs:
           xcodebuild \
             -project MacGesture.xcodeproj \
             -scheme MacGesture \
-            -configuration Debug \
+            -configuration Release \
             -derivedDataPath "$RUNNER_TEMP/DerivedData" \
             CODE_SIGNING_ALLOWED=NO \
             build
@@ -33,21 +33,21 @@ jobs:
         run: |
           codesign \
             --force --deep --sign - --timestamp=none \
-            "$RUNNER_TEMP/DerivedData/Build/Products/Debug/MacGesture.app"
+            "$RUNNER_TEMP/DerivedData/Build/Products/Release/MacGesture.app"
           codesign \
             --verify --deep --strict --verbose=2 \
-            "$RUNNER_TEMP/DerivedData/Build/Products/Debug/MacGesture.app"
+            "$RUNNER_TEMP/DerivedData/Build/Products/Release/MacGesture.app"
 
       - name: Package application
         run: |
           ditto \
             -c -k --sequesterRsrc --keepParent \
-            "$RUNNER_TEMP/DerivedData/Build/Products/Debug/MacGesture.app" \
-            "$RUNNER_TEMP/MacGesture-debug.zip"
+            "$RUNNER_TEMP/DerivedData/Build/Products/Release/MacGesture.app" \
+            "$RUNNER_TEMP/MacGesture-test.zip"
 
       - name: Upload application
         uses: actions/upload-artifact@v7
         with:
-          name: MacGesture-debug
-          path: ${{ runner.temp }}/MacGesture-debug.zip
+          name: MacGesture-test
+          path: ${{ runner.temp }}/MacGesture-test.zip
           if-no-files-found: error
