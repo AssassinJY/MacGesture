@@ -1,0 +1,53 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Use HTTPS for public GitHub dependencies
+        run: git config --global url."https://github.com/".insteadOf "git@github.com:"
+
+      - name: Build MacGesture
+        run: |
+          xcodebuild \
+            -project MacGesture.xcodeproj \
+            -scheme MacGesture \
+            -configuration Release \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Sign application for local testing
+        run: |
+          codesign \
+            --force --deep --sign - --timestamp=none \
+            "$RUNNER_TEMP/DerivedData/Build/Products/Release/MacGesture.app"
+          codesign \
+            --verify --deep --strict --verbose=2 \
+            "$RUNNER_TEMP/DerivedData/Build/Products/Release/MacGesture.app"
+
+      - name: Package application
+        run: |
+          ditto \
+            -c -k --sequesterRsrc --keepParent \
+            "$RUNNER_TEMP/DerivedData/Build/Products/Release/MacGesture.app" \
+            "$RUNNER_TEMP/MacGesture-test.zip"
+
+      - name: Upload application
+        uses: actions/upload-artifact@v7
+        with:
+          name: MacGesture-test
+          path: ${{ runner.temp }}/MacGesture-test.zip
+          if-no-files-found: error

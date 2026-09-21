@@ -13,7 +13,9 @@
         self.opaque = NO;
         self.hasShadow = NO;
         self.hidesOnDeactivate = NO;
-        self.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces;
+        self.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces |
+                                  NSWindowCollectionBehaviorTransient |
+                                  NSWindowCollectionBehaviorIgnoresCycle;
     }
 
     return self;

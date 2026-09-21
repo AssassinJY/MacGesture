@@ -27,6 +27,11 @@ Simply use `brew install --cask macgesture`. 🙌
 - Configurable shortcut invocation by gesture
 - App filtering based on bundle identifiers
 
+## Recent Fixes
+
+- Keep application windows visible in Mission Control desktop previews while MacGesture is running.
+- Prevent custom color wells from painting over the Preferences window on recent macOS and Xcode builds.
+
 ## Gestures Format
 
 | Gesture      | Acronym |
