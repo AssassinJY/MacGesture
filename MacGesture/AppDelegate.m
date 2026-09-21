@@ -123,6 +123,7 @@ static NSUserDefaults *defaults;
     }
 
     windowController = [CanvasWindowController new];
+    windowController.enable = YES;
     direction = [NSMutableString string];
     _enabled = YES;
 
@@ -202,6 +203,7 @@ static NSUserDefaults *defaults;
 
 - (void)setEnabled:(BOOL)enabled {
     _enabled = enabled;
+    windowController.enable = enabled;
     [self updateStatusBarItem];
 }
 
@@ -333,6 +335,7 @@ static CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CG
 //                            CGEventPost(kCGSessionEventTap, mouseDraggedEvent);
 //                        }
                     shouldShow = NO;
+                    [windowController cancelGesture];
                     return event;
                 }
                 shouldShow = YES;
@@ -402,6 +405,7 @@ static CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CG
                         mouseDownEvent = mouseDraggedEvent = NULL;
                         shouldShow = NO;
                         resetDirection();
+                        [windowController cancelGesture];
                         break;
                     }
                     
@@ -482,6 +486,7 @@ static CGEventRef mouseEventCallback(CGEventTapProxy proxy, CGEventType type, CG
             DebugLog(@"kCGEventTapDisabledByUserInput");
         case kCGEventTapDisabledByTimeout:
             DebugLog(@"kCGEventTapDisabledByTimeout");
+            [windowController cancelGesture];
             CGEventTapEnable(mouseEventTap, true); // re-enable
             // windowController.enable = isEnable;
             break;
