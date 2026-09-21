@@ -29,6 +29,15 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build
 
+      - name: Sign application for local testing
+        run: |
+          codesign \
+            --force --deep --sign - --timestamp=none \
+            "$RUNNER_TEMP/DerivedData/Build/Products/Debug/MacGesture.app"
+          codesign \
+            --verify --deep --strict --verbose=2 \
+            "$RUNNER_TEMP/DerivedData/Build/Products/Debug/MacGesture.app"
+
       - name: Package application
         run: |
           ditto \
