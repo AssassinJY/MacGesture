@@ -66,9 +66,8 @@
                                   backing:NSBackingStoreBuffered
                                     defer:YES];
     [self setWindow:window];
-    window.backgroundColor = NSColor.windowBackgroundColor;
     self.contentSubview = [[NSView alloc] initWithFrame:[[[self window] contentView] frame]];
-    [self.contentSubview setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+    [self.contentSubview setAutoresizingMask:(NSViewMinYMargin | NSViewWidthSizable)];
     [[[self window] contentView] addSubview:self.contentSubview];
     [[self window] setShowsToolbarButton:NO];
 }
@@ -211,7 +210,7 @@
 
     if((!newView && !oldView) || ![newView isEqualTo:oldView]){
         NSRect frame = [newView bounds];
-        frame.origin = NSZeroPoint;
+        frame.origin.y = NSHeight([self.contentSubview frame]) - NSHeight([newView bounds]);
         [newView setFrame:frame];
         [self.contentSubview addSubview:newView];
         [[self window] setInitialFirstResponder:newView];

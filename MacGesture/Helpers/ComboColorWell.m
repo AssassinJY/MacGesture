@@ -33,8 +33,13 @@
     return self;
 }
 
-- (void)drawRect:(NSRect)cellFrame
+- (void)drawRect:(NSRect)dirtyRect
 {
+    [NSGraphicsContext saveGraphicsState];
+
+    NSRect cellFrame = self.bounds;
+    [NSBezierPath clipRect:cellFrame];
+
     BOOL drawButtonArea = _showsColorWellButton && cellFrame.size.width >= 2*cellFrame.size.height;
     CGFloat actualRadius = floor(MIN(_cornerRadius, MIN(cellFrame.size.width/2, cellFrame.size.height/2)));
 
@@ -121,6 +126,7 @@
     if (!self.isEnabled)
         fillPath(path, [NSColor colorWithCalibratedWhite:1.0 alpha:0.25]);
 
+    [NSGraphicsContext restoreGraphicsState];
     [self applyActive];
 }
 
