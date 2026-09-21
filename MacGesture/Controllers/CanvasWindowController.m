@@ -23,10 +23,10 @@
     NSView *view = [[CanvasView alloc] initWithFrame:frame];
     window.ignoresMouseEvents = YES;
     window.contentView = view;
-    
-    window.collectionBehavior = NSWindowCollectionBehaviorCanJoinAllSpaces;
+
+    // A screen-sized shielding window must not remain visible between gestures.
+    // Window Server may otherwise omit application windows from Mission Control previews.
     self.window = window;
-    [window orderFront:self];
 }
 
 - (instancetype)init {
@@ -35,14 +35,6 @@
         [self reinitWindow];
         
         [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleScreenParametersChange:) name:NSApplicationDidChangeScreenParametersNotification object:nil];
-
-        [[NSNotificationCenter defaultCenter] addObserverForName:@"PrefsDidClose" object:nil
-          queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//                [self reinitWindow];
-                [self.window orderFrontRegardless];
-            });
-        }];
 
     }
     return self;
@@ -54,12 +46,15 @@
 
 - (void)setEnable:(BOOL)shouldEnable {
     enable = shouldEnable;
-    if (shouldEnable) {
-        [self.window orderFront:self];
-    } else {
-        [self.window orderOut:self];
+    if (!shouldEnable) {
+        [self cancelGesture];
     }
     [(CanvasView *) self.window.contentView setEnable:shouldEnable];
+}
+
+- (void)cancelGesture {
+    [(CanvasView *) self.window.contentView clear];
+    [self.window orderOut:self];
 }
 
 - (void)handleMouseEvent:(NSEvent *)event {
@@ -80,6 +75,7 @@
     }
     switch (event.type) {
         case NSEventTypeRightMouseDown:
+            [self.window orderFrontRegardless];
             [self.window.contentView mouseDown:event];
             break;
         case NSEventTypeRightMouseDragged:
@@ -87,6 +83,7 @@
             break;
         case NSEventTypeRightMouseUp:
             [self.window.contentView mouseUp:event];
+            [self.window orderOut:self];
             break;
         default:
             break;
